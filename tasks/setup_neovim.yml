@@ -28,18 +28,17 @@
 
 - name: Create Neovim configuration directory
   file:
-    path: /home/{{ ansible_user }}/.config/nvim
+    path: /home/{{ my_user }}/.config/nvim
     state: directory
     mode: '0755'
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "steven"
+    group: "steven"
 
 - name: Download Neovim kickstart configuration
   get_url:
     url: https://raw.githubusercontent.com/nvim-lua/kickstart.nvim/master/init.lua
-    dest: /home/{{ ansible_user }}/.config/nvim/init.lua
+    dest: /home/{{ my_user }}/.config/nvim/init.lua
     mode: '0644'
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-
+    owner: "{{ my_user }}"
+    group: "{{ my_user }}"
 
