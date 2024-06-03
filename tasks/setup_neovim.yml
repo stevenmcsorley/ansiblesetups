@@ -34,7 +34,7 @@
 
 - name: Create Neovim symlink if extracted
   file:
-    src: /usr/local/nvim/AppRun
+    src: /usr/local/nvim/usr/bin/nvim
     dest: /usr/bin/nvim
     state: link
   when: appimage_extract.changed
@@ -45,6 +45,16 @@
     dest: /usr/bin/nvim
     state: link
   when: not appimage_extract.changed
+
+- name: Verify extracted Neovim
+  command: /usr/bin/nvim --version
+  register: extracted_nvim_version
+  failed_when: extracted_nvim_version.rc != 0 and appimage_extract.changed
+
+- name: Fail if Neovim extraction failed
+  fail:
+    msg: "Neovim extraction and execution failed."
+  when: extracted_nvim_version.rc != 0 and appimage_extract.changed
 
 - name: Create Neovim configuration directory
   file:
