@@ -4,13 +4,23 @@
 sudo apt update
 sudo apt install -y ansible
 
-# Clone the repository containing the playbook
-if [ ! -d "zsh-setup" ]; then
-    git clone https://github.com/yourusername/zsh-setup.git
-fi
+# Create a temporary directory for the playbook files
+TMP_DIR=$(mktemp -d)
+cd $TMP_DIR
 
-cd zsh-setup
+# Fetch the setup_zsh.yml playbook
+curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/setup_zsh.yml
+
+# Create the templates directory and fetch the zshrc.j2 template
+mkdir templates
+cd templates
+curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/templates/zshrc.j2
+cd ..
 
 # Run the Ansible playbook
 ansible-playbook setup_zsh.yml --connection=local
+
+# Cleanup
+cd ~
+rm -rf $TMP_DIR
 
