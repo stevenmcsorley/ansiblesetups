@@ -1,0 +1,47 @@
+---
+- name: Setup Neovim with AppImage
+  become: yes
+  tasks:
+    - name: Install curl
+      apt:
+        name: curl
+        state: present
+
+    - name: Download Neovim AppImage
+      get_url:
+        url: https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+        dest: /usr/local/bin/nvim
+        mode: '0755'
+
+    - name: Verify Neovim AppImage
+      command: /usr/local/bin/nvim --version
+      register: nvim_version
+      ignore_errors: yes
+
+    - name: Fail if Neovim download or execution failed
+      fail:
+        msg: "Neovim AppImage download or execution failed."
+      when: nvim_version.rc != 0
+
+    - name: Ensure /usr/bin/nvim is a symbolic link to /usr/local/bin/nvim
+      file:
+        src: /usr/local/bin/nvim
+        dest: /usr/bin/nvim
+        state: link
+
+    - name: Create Neovim configuration directory
+      file:
+        path: /home/{{ ansible_user }}/.config/nvim
+        state: directory
+        mode: '0755'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Download Neovim kickstart configuration
+      get_url:
+        url: https://raw.githubusercontent.com/nvim-lua/kickstart.nvim/master/init.lua
+        dest: /home/{{ ansible_user }}/.config/nvim/init.lua
+        mode: '0644'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+

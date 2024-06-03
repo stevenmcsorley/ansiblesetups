@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+    - import_tasks: tasks/setup_vim.yml
+    - import_tasks: tasks/setup_zsh.yml
+    - import_tasks: tasks/setup_neovim.yml
+

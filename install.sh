@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Update and install Ansible
+# Update package list and install Ansible
 sudo apt update
 sudo apt install -y ansible
 
@@ -8,17 +8,19 @@ sudo apt install -y ansible
 TMP_DIR=$(mktemp -d)
 cd $TMP_DIR
 
-# Fetch the setup_zsh.yml playbook
-curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/setup_zsh.yml
+# Fetch the main.yml playbook
+curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/main.yml
 
-# Create the templates directory and fetch the zshrc.j2 template
-mkdir templates
-cd templates
-curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/templates/zshrc.j2
+# Fetch the setup_vim.yml, setup_zsh.yml, and setup_neovim.yml tasks
+mkdir -p tasks
+cd tasks
+curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/tasks/setup_vim.yml
+curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/tasks/setup_zsh.yml
+curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/tasks/setup_neovim.yml
 cd ..
 
 # Run the Ansible playbook
-ansible-playbook setup_zsh.yml --connection=local
+ansible-playbook main.yml --connection=local
 
 # Cleanup
 cd ~
