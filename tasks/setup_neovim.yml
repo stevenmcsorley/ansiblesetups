@@ -15,24 +15,38 @@
   register: nvim_version
   ignore_errors: yes
 
-- name: Fail if Neovim download or execution failed
-  fail:
-    msg: "Neovim AppImage download or execution failed."
-  when: nvim_version.rc != 0
+- name: Extract Neovim AppImage if FUSE is not available
+  command: /usr/local/bin/nvim --appimage-extract
+  args:
+    chdir: /usr/local
+  when: nvim_version.stderr is search("libfuse.so.2")
+  register: appimage_extract
 
-- name: Ensure /usr/bin/nvim is a symbolic link to /usr/local/bin/nvim
+- name: Move extracted Neovim files to /usr/local/nvim
+  command: mv /usr/local/squashfs-root /usr/local/nvim
+  when: appimage_extract.changed
+
+- name: Create Neovim symlink if extracted
+  file:
+    src: /usr/local/nvim/AppRun
+    dest: /usr/bin/nvim
+    state: link
+  when: appimage_extract.changed
+
+- name: Ensure /usr/bin/nvim is a symbolic link to /usr/local/bin/nvim if not extracted
   file:
     src: /usr/local/bin/nvim
     dest: /usr/bin/nvim
     state: link
+  when: not appimage_extract.changed
 
 - name: Create Neovim configuration directory
   file:
     path: /home/{{ my_user }}/.config/nvim
     state: directory
     mode: '0755'
-    owner: "steven"
-    group: "steven"
+    owner: "{{ my_user }}"
+    group: "{{ my_user }}"
 
 - name: Download Neovim kickstart configuration
   get_url:
