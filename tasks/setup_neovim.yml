@@ -7,19 +7,19 @@
 - name: Download Neovim AppImage
   get_url:
     url: https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
-    dest: /usr/local/bin/nvim
+    dest: /usr/local/bin/nvim.appimage
     mode: '0755'
 
 - name: Verify Neovim AppImage
-  command: /usr/local/bin/nvim --version
+  command: /usr/local/bin/nvim.appimage --version
   register: nvim_version
   ignore_errors: yes
 
 - name: Extract Neovim AppImage if FUSE is not available
-  command: /usr/local/bin/nvim --appimage-extract
+  command: /usr/local/bin/nvim.appimage --appimage-extract
   args:
     chdir: /usr/local
-  when: nvim_version.stderr is search("libfuse.so.2")
+  when: nvim_version.rc != 0
   register: appimage_extract
 
 - name: Move extracted Neovim files to /usr/local/nvim
@@ -33,9 +33,9 @@
     state: link
   when: appimage_extract.changed
 
-- name: Ensure /usr/bin/nvim is a symbolic link to /usr/local/bin/nvim if not extracted
+- name: Ensure /usr/bin/nvim is a symbolic link to /usr/local/bin/nvim.appimage if not extracted
   file:
-    src: /usr/local/bin/nvim
+    src: /usr/local/bin/nvim.appimage
     dest: /usr/bin/nvim
     state: link
   when: not appimage_extract.changed
