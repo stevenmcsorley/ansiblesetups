@@ -22,6 +22,12 @@
   when: nvim_version.rc != 0
   register: appimage_extract
 
+- name: Remove existing /usr/local/nvim directory if it exists
+  file:
+    path: /usr/local/nvim
+    state: absent
+  when: appimage_extract.changed
+
 - name: Move extracted Neovim files to /usr/local/nvim
   command: mv /usr/local/squashfs-root /usr/local/nvim
   when: appimage_extract.changed
