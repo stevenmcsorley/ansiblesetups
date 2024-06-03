@@ -32,9 +32,28 @@
   command: mv /usr/local/squashfs-root /usr/local/nvim
   when: appimage_extract.changed
 
+- name: Create script to use the extracted Neovim binary
+  copy:
+    dest: /usr/local/bin/nvim
+    content: |
+      #!/bin/bash
+      /usr/local/nvim/usr/bin/nvim "$@"
+    mode: '0755'
+  when: appimage_extract.changed
+
+- name: Remove existing /usr/bin/nvim symlink if it exists
+  file:
+    path: /usr/bin/nvim
+    state: absent
+  when: appimage_extract.changed
+
+- name: Clear cached paths
+  command: hash -r
+  when: appimage_extract.changed
+
 - name: Create Neovim symlink if extracted
   file:
-    src: /usr/local/nvim/usr/bin/nvim
+    src: /usr/local/bin/nvim
     dest: /usr/bin/nvim
     state: link
   when: appimage_extract.changed
