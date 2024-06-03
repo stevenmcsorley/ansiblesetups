@@ -2,46 +2,36 @@
 - name: Setup Zsh with Oh My Zsh
   hosts: localhost
   become: yes
+  vars:
+    user_name: steven
+    user_home: "/home/steven"
   tasks:
     - name: Install Zsh
       apt:
         name: zsh
         state: present
+      tags: &tags_for_zsh_tasks [ 'install', 'productivity', 'dotfiles', 'zsh' ]
 
-    - name: Change default shell to Zsh
-      user:
-        name: "{{ lookup('env', 'SUDO_USER') | default(ansible_user_id) }}"
-        shell: /usr/bin/zsh
+    - name: Change shell to zsh
+      shell: chsh -s $(which zsh) {{ user_name }}
+      tags: *tags_for_zsh_tasks
 
-    - name: Install git
-      apt:
-        name: git
-        state: present
+    - name: Check that the .oh-my-zsh directory exists
+      stat:
+        path: "{{ user_home }}/.oh-my-zsh"
+      register: oh_my_stats
+      tags: *tags_for_zsh_tasks
 
-    - name: Clone Oh My Zsh repository
-      git:
-        repo: https://github.com/ohmyzsh/ohmyzsh.git
-        dest: "{{ ansible_env.HOME }}/.oh-my-zsh"
-        version: master
-        force: yes
-      become: no
+    - name: Oh-My-Zsh
+      shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > {{ user_home }}/.oh-my-installer && chmod +x {{ user_home }}/.oh-my-installer && sudo -u {{ user_name }} {{ user_home }}/.oh-my-installer
+      tags: *tags_for_zsh_tasks
+      when: oh_my_stats.stat.exists == False
 
-    - name: Create .zshrc file from template
-      template:
-        src: zshrc.j2
-        dest: "{{ ansible_env.HOME }}/.zshrc"
-      become: no
-
-    - name: Change ownership of .oh-my-zsh directory
-      file:
-        path: "{{ ansible_env.HOME }}/.oh-my-zsh"
-        owner: "{{ lookup('env', 'SUDO_USER') | default(ansible_user_id) }}"
-        group: "{{ lookup('env', 'SUDO_USER') | default(ansible_user_id) }}"
-        recurse: yes
-
-    - name: Change ownership of .zshrc file
-      file:
-        path: "{{ ansible_env.HOME }}/.zshrc"
-        owner: "{{ lookup('env', 'SUDO_USER') | default(ansible_user_id) }}"
-        group: "{{ lookup('env', 'SUDO_USER') | default(ansible_user_id) }}"
+    - name: Install zsh-autosuggestions
+      ansible.builtin.git:
+        repo: 'https://github.com/zsh-users/zsh-autosuggestions.git'
+        dest: "{{ user_home }}/.oh-my-zsh/plugins/zsh-autosuggestions"
+      tags: *tags_for_zsh_tasks
+      become: yes
+      become_user: steven
 
