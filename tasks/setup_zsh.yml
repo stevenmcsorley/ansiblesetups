@@ -1,6 +1,5 @@
 ---
 - name: Setup Zsh with Oh My Zsh
-  hosts: localhost
   become: yes
   vars:
     user_name: steven
@@ -22,7 +21,7 @@
       register: oh_my_stats
       tags: *tags_for_zsh_tasks
 
-    - name: Oh-My-Zsh
+    - name: Install Oh-My-Zsh
       shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > {{ user_home }}/.oh-my-installer && chmod +x {{ user_home }}/.oh-my-installer && sudo -u {{ user_name }} {{ user_home }}/.oh-my-installer
       tags: *tags_for_zsh_tasks
       when: oh_my_stats.stat.exists == False
