@@ -1,0 +1,49 @@
+---
+- name: Setup Zsh with Oh My Zsh
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install Zsh
+      apt:
+        name: zsh
+        state: present
+
+    - name: Change default shell to Zsh
+      user:
+        name: "{{ ansible_user_id }}"
+        shell: /usr/bin/zsh
+
+    - name: Install git
+      apt:
+        name: git
+        state: present
+
+    - name: Clone Oh My Zsh repository
+      git:
+        repo: https://github.com/ohmyzsh/ohmyzsh.git
+        dest: /home/{{ ansible_user_id }}/.oh-my-zsh
+        version: master
+        force: yes
+      become: no
+      run_once: true
+
+    - name: Create .zshrc file from template
+      template:
+        src: zshrc.j2
+        dest: /home/{{ ansible_user_id }}/.zshrc
+      become: no
+      run_once: true
+
+    - name: Change ownership of .oh-my-zsh directory
+      file:
+        path: /home/{{ ansible_user_id }}/.oh-my-zsh
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+        recurse: yes
+
+    - name: Change ownership of .zshrc file
+      file:
+        path: /home/{{ ansible_user_id }}/.zshrc
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+

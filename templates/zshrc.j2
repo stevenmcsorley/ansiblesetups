@@ -1,0 +1,8 @@
+export ZSH="/home/{{ ansible_user_id }}/.oh-my-zsh"
+ZSH_THEME="robbyrussell"
+plugins=(git)
+
+source $ZSH/oh-my-zsh.sh
+
+export PATH=$HOME/bin:/usr/local/bin:$PATH
+
