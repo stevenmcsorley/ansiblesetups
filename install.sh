@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set the environment variable
+export MY_USER=steven
+
 # Update package list and install Ansible
 sudo apt update
 sudo apt install -y ansible
@@ -19,8 +22,8 @@ curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/ta
 curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/tasks/setup_neovim.yml
 cd ..
 
-# Run the Ansible playbook
-ansible-playbook main.yml --connection=local
+# Run the Ansible playbook with the environment variable
+ansible-playbook main.yml --connection=local -e my_user=$MY_USER
 
 # Cleanup
 cd ~

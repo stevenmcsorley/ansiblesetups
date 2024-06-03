@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Print ansible_user_id
+      debug:
+        msg: "The ansible_user_id is {{ ansible_user_id }}"
+
