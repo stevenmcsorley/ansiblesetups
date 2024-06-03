@@ -1,8 +1,7 @@
-##Ansible setups
+## Ansible Setups
 
-run 
+Run the following command to install the setup:
 
-bash```
+```bash
 curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/install.sh && chmod +x install.sh && ./install.sh
-````
 
