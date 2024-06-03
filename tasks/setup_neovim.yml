@@ -47,10 +47,6 @@
     state: absent
   when: appimage_extract.changed
 
-- name: Clear cached paths
-  command: hash -r
-  when: appimage_extract.changed
-
 - name: Create Neovim symlink if extracted
   file:
     src: /usr/local/bin/nvim
@@ -90,5 +86,4 @@
     mode: '0644'
     owner: "{{ my_user }}"
     group: "{{ my_user }}"
-
 
