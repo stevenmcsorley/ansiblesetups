@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Set the environment variable
+# Set the env variable
 export MY_USER=steven
 
 # Update package list and install Ansible
@@ -14,15 +14,17 @@ cd $TMP_DIR
 # Fetch the main.yml playbook
 curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/main.yml
 
-# Fetch the setup_vim.yml, setup_zsh.yml, and setup_neovim.yml tasks
+# Fetch tasks
 mkdir -p tasks
 cd tasks
 curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/tasks/setup_vim.yml
 curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/tasks/setup_zsh.yml
 curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/tasks/setup_neovim.yml
+curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/tasks/setup_npm.yml
+curl -O https://raw.githubusercontent.com/stevenmcsorley/ansiblesetups/master/tasks/setup_stow.yml
 cd ..
 
-# Run the Ansible playbook with the environment variable
+# Run ansible
 ansible-playbook main.yml --connection=local -e my_user=$MY_USER
 
 # Cleanup

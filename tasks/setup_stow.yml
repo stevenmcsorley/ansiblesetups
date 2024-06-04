@@ -1,0 +1,56 @@
+---
+- name: Ensure required packages are installed
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - wget
+    - build-essential
+    - autoconf
+    - automake
+    - libtool
+    - make
+    - gcc
+  tags: &tags_for_stow_tasks [ 'install', 'productivity', 'dotfiles', 'stow' ]
+
+- name: Download GNU Stow 2.4.0
+  get_url:
+    url: https://ftp.gnu.org/gnu/stow/stow-2.4.0.tar.gz
+    dest: /tmp/stow-2.4.0.tar.gz
+  tags: *tags_for_stow_tasks
+
+- name: Extract GNU Stow 2.4.0
+  unarchive:
+    src: /tmp/stow-2.4.0.tar.gz
+    dest: /tmp
+    remote_src: yes
+  tags: *tags_for_stow_tasks
+
+- name: Configure GNU Stow
+  command: ./configure
+  args:
+    chdir: /tmp/stow-2.4.0
+  tags: *tags_for_stow_tasks
+
+- name: Compile GNU Stow
+  command: make
+  args:
+    chdir: /tmp/stow-2.4.0
+  tags: *tags_for_stow_tasks
+
+- name: Install GNU Stow
+  command: make install
+  args:
+    chdir: /tmp/stow-2.4.0
+  tags: *tags_for_stow_tasks
+
+- name: Verify GNU Stow installation
+  command: stow --version
+  register: stow_version
+  tags: *tags_for_stow_tasks
+
+- name: Display GNU Stow version
+  debug:
+    msg: "GNU Stow version: {{ stow_version.stdout }}"
+  tags: *tags_for_stow_tasks
+
