@@ -86,6 +86,3 @@ Ensure your directory structure looks like this:
   sudo apt update
   sudo apt install -y ansible
   \```
-
-This setup allows you to run and test the individual playbooks as well as the combined installation script, ensuring that all necessary tools are installed and configured correctly. If you encounter any issues, feel free to open an issue or contact the maintainer.
-
